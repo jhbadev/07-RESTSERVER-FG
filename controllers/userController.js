@@ -1,10 +1,11 @@
 const { response } = require('express')
 
+const User = require('../models/user');
 
 const userGet = (req, res = response) => {
 
     //const params = req.query;
-    const {id, country, page, limit} = req.query;
+    const { id, country, page, limit } = req.query;
 
     res.json({
         msg: 'GET userController',
@@ -29,15 +30,33 @@ const userPut = (req, res = response) => {
 
 }
 
-const userPost = (req, res = response) => {
+const userPost = async (req, res = response) => {
 
-    const { author, title, edition } = req.body;
-    res.json({
-        msg: 'POST userController',
-        author,
-        title,
-        edition
-    });
+    const { name, email, password, role, img } = req.body;
+    // const usuario = new User(body);
+    const usuario = new User({ name, email, password, role, img });
+
+    try {
+        await usuario.save();
+        res.status(201).json({
+            code: 201,
+            success: true,
+            message: 'User Added successfully',
+            usuario
+
+        });
+    } catch (error) {
+        res.status(400).json({
+            code: 400,
+            success: false,
+            msg: error.message,
+        })
+
+
+    }
+
+
+
 }
 
 const userDelete = (req, res = response) => {
